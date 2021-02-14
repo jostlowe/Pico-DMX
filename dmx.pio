@@ -1,0 +1,29 @@
+; Author: Jostein Løwer, github: jostlowe
+; SPDX-License-Identifier: BSD-3-Clause
+; 
+; PIO program for transmitting the DMX lighting protocol.
+; Compliant with ANSI E1.11-2008 (R2018)
+; The program assumes a PIO clock frequency of exactly 1MHz
+
+.program dmx
+.side_set 1 opt
+
+
+; Assert break condition
+    set x, 21   side 0     ; Preload bit counter, assert break condition for 176us 
+breakloop:                 ; This loop will run 22 times
+    jmp x-- breakloop [7]  ; Each loop iteration is 8 cycles.
+
+
+; Assert start condition
+    nop [7]    side 1      ; Assert MAB. 8 cycles nop and 8 cycles stop-bits = 16us
+
+
+; Send data frame
+.wrap_target
+    pull       side 1 [7]  ; Assert 2 stop bits, or stall with line in idle state
+    set x, 7   side 0 [3]  ; Preload bit counter, assert start bit for 4 clocks
+bitloop:                   ; This loop will run 8 times (8n1 UART)
+    out pins, 1            ; Shift 1 bit from OSR to the first OUT pin
+    jmp x-- bitloop   [2]  ; Each loop iteration is 4 cycles.
+.wrap

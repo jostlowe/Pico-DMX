@@ -25,3 +25,4 @@ Navigate to the root directory of your project and clone the rpi-pico-dmx reposi
 ```
 git clone https://github.com/jostlowe/rpi-pico-dmx.git
 ```
+NOT QUITE DONE MORE COMING SOON

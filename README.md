@@ -42,7 +42,7 @@ add_executable(your-project-name
 The PIO assembler needs to be instructed to build a c-header for the PIO assembly code driving the DMX transmitter. Add the following line to your ```CMakeLists.txt```
 
 ```cmake
-pico_generate_pio_header(rpi-pico-dmx-dev ${CMAKE_CURRENT_LIST_DIR}/rpi-pico-dmx/dmx.pio)
+pico_generate_pio_header(your-project-name ${CMAKE_CURRENT_LIST_DIR}/rpi-pico-dmx/dmx.pio)
 ```
 
 Make sure that the ```hardware_dma``` and ```hardware_pio``` are added to your link libraries.

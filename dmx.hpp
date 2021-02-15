@@ -27,7 +27,7 @@ public:
     };
 
     Result begin(uint pin, PIO pio = pio0);
-    Result send(uint8_t *universe, uint length);
+    Result write(uint8_t *universe, uint length);
     bool busy();
 };
 

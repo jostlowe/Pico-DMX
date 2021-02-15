@@ -81,7 +81,7 @@ Dmx::Result Dmx::begin(uint pin, PIO pio)
     return SUCCESS;
 }
 
-Dmx::Result Dmx::send(uint8_t *universe, uint length)
+Dmx::Result Dmx::write(uint8_t *universe, uint length)
 {
 
     // Temporarily disable the PIO state machine

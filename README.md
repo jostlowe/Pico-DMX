@@ -25,4 +25,31 @@ Navigate to the root directory of your project and clone the rpi-pico-dmx reposi
 ```
 git clone https://github.com/jostlowe/rpi-pico-dmx.git
 ```
-NOT QUITE DONE MORE COMING SOON
+The simplest way to add the rpi-pico-dmx is to add the ```dmx.cpp``` file to your project executables. When you create a new RPi Pico project, there should be a line in your ```CMakeLists.txt``` that looks roughly like this
+
+```
+add_executable(your-project-name
+        your-project-name.cpp
+        )
+```
+Append ```rpi-pico-dmx/dmx.cpp``` to this line
+```
+add_executable(your-project-name
+        your-project-name.cpp
+        rpi-pico-dmx/dmx.cpp
+        )
+```
+The PIO assembler needs to be instructed to build a c-header for the PIO assembly code driving the DMX transmitter. Add the following line to your ```CMakeLists.txt```
+
+```
+pico_generate_pio_header(rpi-pico-dmx-dev ${CMAKE_CURRENT_LIST_DIR}/rpi-pico-dmx/dmx.pio)
+```
+
+Make sure that the ```hardware_dma``` and ```hardware_pio``` are added to your link libraries.
+
+```
+target_link_libraries(your-project-name
+        hardware_dma
+        hardware_pio
+        )
+```

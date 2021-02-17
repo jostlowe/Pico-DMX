@@ -1,4 +1,4 @@
-# rpi-pico-dmx
+# [WIP] rpi-pico-dmx
 A library for outputing the DMX512-A lighting control protocol from a Raspberry Pi Pico
 
 ## About
@@ -53,3 +53,7 @@ target_link_libraries(your-project-name
         hardware_pio
         )
 ```
+
+## Examples
+
+Coming soon

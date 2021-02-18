@@ -29,6 +29,8 @@ public:
     Result begin(uint pin, PIO pio = pio0);
     Result write(uint8_t *universe, uint length);
     bool busy();
+    void await();
+    void end();
 };
 
 #endif

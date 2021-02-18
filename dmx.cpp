@@ -109,3 +109,27 @@ bool Dmx::busy()
 
     return !pio_sm_is_tx_fifo_empty(_pio, _sm);
 }
+
+void Dmx::await()
+{
+    dma_channel_wait_for_finish_blocking(_dma);
+
+    while (!pio_sm_is_tx_fifo_empty(_pio, _sm))
+    {
+    }
+}
+
+void Dmx::end()
+{
+    // Stop the PIO state machine
+    pio_sm_set_enabled(_pio, _sm, false);
+
+    // Remove the PIO DMX program from the PIO program memory
+    pio_remove_program(_pio, &dmx_program, _prgm_offset);
+
+    // Unclaim the DMA channel
+    dma_channel_unclaim(_dma);
+
+    // Unclaim the sm
+    pio_sm_unclaim(_pio, _sm);
+}

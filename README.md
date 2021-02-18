@@ -57,3 +57,10 @@ target_link_libraries(your-project-name
 ## Examples
 
 Coming soon
+
+
+## Voltage Transceivers
+The RPi Pico itself cannot be directly hooked up to your DMX line, as DMX operates on RS485 logic levels, 
+which do not match the voltage levels of the GPIO pins on the RPi Pico. 
+
+Fortunately TLL to RS485 transceivers are easily available. Simple transceiver modules can be bought through online retailer for only a couple of dollars. These tend to use the MAX485 series of voltage level transceivers, which work great for most purposes. If you're planning to implement DMX on an industrial level, your device should have some kind of EMC protection. Many RS485 transceivers are available that have galvanic isolation between the TLL side and the RS485 side. These should be the preferred option.

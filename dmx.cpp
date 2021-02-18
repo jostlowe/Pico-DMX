@@ -87,7 +87,7 @@ Dmx::Result Dmx::begin(uint pin, PIO pio)
     return SUCCESS;
 }
 
-Dmx::Result Dmx::write(uint8_t *universe, uint length)
+void Dmx::write(uint8_t *universe, uint length)
 {
 
     // Temporarily disable the PIO state machine
@@ -104,8 +104,6 @@ Dmx::Result Dmx::write(uint8_t *universe, uint length)
 
     // Start the DMA transfer
     dma_channel_transfer_from_buffer_now(_dma, universe, length);
-
-    return SUCCESS;
 }
 
 bool Dmx::busy()

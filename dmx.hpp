@@ -78,7 +78,7 @@ public:
         transmitted 
     */
 
-    Result write(uint8_t *universe, uint length);
+    void write(uint8_t *universe, uint length);
 
     /*
         Checks whether the DMX transmitter is busy sending

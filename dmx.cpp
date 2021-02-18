@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2021 Jostein Løwer 
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
 #include "dmx.hpp"
 
 #include "dmx.pio.h"

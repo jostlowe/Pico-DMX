@@ -4,13 +4,11 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef DMX_SOURCE_H
-#define DMX_SOURCE_H
+#ifndef DMX_H
+#define DMX_H
 
-#include <pico/stdlib.h>
-#include <stdio.h>
-#include "hardware/dma.h"
-#include "hardware/pio.h"
+#include <dma.h>
+#include <pio.h>
 
 #define DMX_UNIVERSE_SIZE 512
 #define DMX_SM_FREQ 1000000
@@ -29,7 +27,7 @@ public:
         Return code guarantees that the DMX transmitter instance was properly configured
         and is ready to run
     */
-    enum Result
+    enum return_code
     {
         SUCCESS = 1,
 
@@ -58,7 +56,7 @@ public:
        run 4 more on pio1  
     */
 
-    Result begin(uint pin, PIO pio = pio0);
+    return_code begin(uint pin, PIO pio = pio0);
 
     /*
         write a DMX universe to the DMX transmitter instance.

@@ -29,7 +29,7 @@ public:
     */
     enum return_code
     {
-        SUCCESS = 1,
+        SUCCESS = 0,
 
         // There were no available state machines left in the
         // pio instance.

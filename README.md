@@ -1,6 +1,8 @@
 # Pico-DMX
 A library for outputing the DMX512-A lighting control protocol from a Raspberry Pi Pico
 
+![example branch parameter](https://github.com/jostlowe/Pico-DMX/actions/workflows/Arduino-lint.yml/badge.svg?branch=arduino-port)
+
 ## About
 
 The Raspberry Pi Pico provides an exciting new addition to the market on low-cost easy-to-use microcontroller board. The RPi Pico has plenty of features making it particularly interesting for lighting control hackers:

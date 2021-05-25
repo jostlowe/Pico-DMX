@@ -1,11 +1,11 @@
 ; Author: Jostein Løwer, github: jostlowe
 ; SPDX-License-Identifier: BSD-3-Clause
 ; 
-; PIO program for transmitting the DMX lighting protocol.
+; PIO program for outputting the DMX lighting protocol.
 ; Compliant with ANSI E1.11-2008 (R2018)
 ; The program assumes a PIO clock frequency of exactly 1MHz
 
-.program dmx
+.program DmxOutput
 .side_set 1 opt
 
 

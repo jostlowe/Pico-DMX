@@ -5,12 +5,12 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include "dmx.h"
-#include "dmx.pio.h"
+#include "DmxOutput.h"
+#include "DmxOutput.pio.h"
 #include <clocks.h>
 #include <irq.h>
 
-Dmx::return_code Dmx::begin(uint pin, PIO pio)
+DmxOutput::return_code DmxOutput::begin(uint pin, PIO pio)
 {
     /* 
     Attempt to load the DMX PIO assembly program 
@@ -87,7 +87,7 @@ Dmx::return_code Dmx::begin(uint pin, PIO pio)
     return SUCCESS;
 }
 
-void Dmx::write(uint8_t *universe, uint length)
+void DmxOutput::write(uint8_t *universe, uint length)
 {
 
     // Temporarily disable the PIO state machine
@@ -106,7 +106,7 @@ void Dmx::write(uint8_t *universe, uint length)
     dma_channel_transfer_from_buffer_now(_dma, universe, length);
 }
 
-bool Dmx::busy()
+bool DmxOutput::busy()
 {
     if (dma_channel_is_busy(_dma))
         return true;
@@ -125,7 +125,7 @@ void Dmx::await()
 }
 */
 
-void Dmx::end()
+void DmxOutput::end()
 {
     // Stop the PIO state machine
     pio_sm_set_enabled(_pio, _sm, false);

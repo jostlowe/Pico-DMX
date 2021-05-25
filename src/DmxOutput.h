@@ -13,7 +13,7 @@
 #define DMX_UNIVERSE_SIZE 512
 #define DMX_SM_FREQ 1000000
 
-class Dmx
+class DmxOutput
 {
     uint _prgm_offset;
     uint _pin;

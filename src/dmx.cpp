@@ -114,6 +114,7 @@ bool Dmx::busy()
     return !pio_sm_is_tx_fifo_empty(_pio, _sm);
 }
 
+/*
 void Dmx::await()
 {
     dma_channel_wait_for_finish_blocking(_dma);
@@ -122,6 +123,7 @@ void Dmx::await()
     {
     }
 }
+*/
 
 void Dmx::end()
 {

@@ -1,7 +1,7 @@
 # rpi-pico-dmx
 A library for outputing the DMX512-A lighting control protocol from a Raspberry Pi Pico
 
-![example workflow](https://github.com/jostlowe/Pico-DMX/actions/workflows/Arduino-lint.yml/badge.svg)
+![example branch parameter](https://github.com/jostlowe/Pico-DMX/actions/workflows/Arduino-lint.yml/badge.svg?branch=arduino-port)
 
 ## About
 

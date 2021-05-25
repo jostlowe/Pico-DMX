@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef DMX_H
-#define DMX_H
+#ifndef DMX_OUTPUT_H
+#define DMX_OUTPUT_H
 
 #include <dma.h>
 #include <pio.h>

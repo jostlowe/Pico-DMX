@@ -6,20 +6,25 @@
 ; The program assumes a PIO clock frequency of exactly 1MHz
 
 .program DmxInput
+.define dmx_bit 4                     ; As DMX has a baudrate of 250.000kBaud, a single bit is 4us
 
 break_reset:
-    set x, 11                         ; Setup a counter to count the iterations on break_loop
-break_loop:                           ; Break loop lasts for 8us. The entire break must be minimum 11*8us = 88us
+    set x, 29                         ; Setup a counter to count the iterations on break_loop
+
+break_loop:                           ; Break loop lasts for 8us. The entire break must be minimum 30*3us = 90us
     jmp pin break_reset               ; Go back to start if pin goes high during the break
-    jmp x-- break_loop          [6]   ; Decrease the counter and go back to break loop if x is 0 and the break is not done
-    wait 1 pin 0                      ; Wait for line to go high for the Mark-After-Break (MAB) 
+    jmp x-- break_loop   [1]          ; Decrease the counter and go back to break loop if x>0 so that the break is not done
+    wait 1 pin 0                      ; Stall until line goes high for the Mark-After-Break (MAB) 
 
 .wrap_target
     wait 0 pin 0                      ; Stall until start bit is asserted
-    set x, 7    [4]                   ; Preload bit counter, then delay until halfway through
+    set x, 7             [dmx_bit+1]  ; Preload bit counter, then delay until halfway through
+
 bitloop:                              ; the first data bit (12 cycles incl wait, set).
     in pins, 1                        ; Shift data bit into ISR
-    jmp x-- bitloop             [2]   ; Loop 8 times, each loop iteration is 8 cycles
+    jmp x-- bitloop      [dmx_bit-2]  ; Loop 8 times, each loop iteration is 4us
+    wait 1 pin 0                      ; Wait for pin to go high for stop bits
     push                              ; Should probably do error checking on the stop bits some time in the future....
+
 .wrap
 

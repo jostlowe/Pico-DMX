@@ -20,7 +20,7 @@ break_loop:                           ; Break loop lasts for 8us. The entire bre
     wait 0 pin 0                      ; Stall until start bit is asserted
     set x, 7             [dmx_bit+1]  ; Preload bit counter, then delay until halfway through
 
-bitloop:                              ; the first data bit (12 cycles incl wait, set).
+bitloop:                              
     in pins, 1                        ; Shift data bit into ISR
     jmp x-- bitloop      [dmx_bit-2]  ; Loop 8 times, each loop iteration is 4us
     wait 1 pin 0                      ; Wait for pin to go high for stop bits

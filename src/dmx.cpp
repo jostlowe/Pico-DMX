@@ -1,16 +1,16 @@
+
 /*
  * Copyright (c) 2021 Jostein Løwer 
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include "dmx.hpp"
-
+#include "dmx.h"
 #include "dmx.pio.h"
-#include "hardware/clocks.h"
-#include "hardware/irq.h"
+#include <clocks.h>
+#include <irq.h>
 
-Dmx::Result Dmx::begin(uint pin, PIO pio)
+Dmx::return_code Dmx::begin(uint pin, PIO pio)
 {
     /* 
     Attempt to load the DMX PIO assembly program 
@@ -28,7 +28,7 @@ Dmx::Result Dmx::begin(uint pin, PIO pio)
     into the PIO program memory
     */
 
-    uint sm = pio_claim_unused_sm(pio, false);
+    int sm = pio_claim_unused_sm(pio, false);
     if (sm == -1)
     {
         return ERR_NO_SM_AVAILABLE;
@@ -114,6 +114,7 @@ bool Dmx::busy()
     return !pio_sm_is_tx_fifo_empty(_pio, _sm);
 }
 
+/*
 void Dmx::await()
 {
     dma_channel_wait_for_finish_blocking(_dma);
@@ -122,6 +123,7 @@ void Dmx::await()
     {
     }
 }
+*/
 
 void Dmx::end()
 {

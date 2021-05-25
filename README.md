@@ -1,7 +1,8 @@
 # Pico-DMX
-A library for outputing the DMX512-A lighting control protocol from a Raspberry Pi Pico
 
 ![example branch parameter](https://github.com/jostlowe/Pico-DMX/actions/workflows/Arduino-lint.yml/badge.svg?branch=arduino-port)
+
+A library for outputing the DMX512-A lighting control protocol from a Raspberry Pi Pico
 
 ## About
 
@@ -28,7 +29,7 @@ The library is based around the `Dmx` class, representing a single DMX output. T
    Dmx myDmxOutput;
 ```
 
-After instantiation, the DMX output must be assigned to a pin. The `.begin(uint pin)` method starts the DMX output and binds it to a pin. To start a DMX output on GPIO1 on the Pico, simply call
+After instantiation, the DMX output must be assigned to a pin. The `.begin(uint pin)` method initializes the DMX output and binds it to a pin. To start a DMX output on GPIO1 on the Pico, simply call
 
 ```C++
    myDmxOutput.begin(1);
@@ -60,9 +61,6 @@ The `.write(...)` method is not blocking, and executes immediately. To check the
         // Patiently wait, or do other computing stuff
    }
 ```
-
-## Examples
-
 
 ## Voltage Transceivers
 The RPi Pico itself cannot be directly hooked up to your DMX line, as DMX operates on RS485 logic levels, 

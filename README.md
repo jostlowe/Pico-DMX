@@ -2,7 +2,7 @@
 
 ![example branch parameter](https://github.com/jostlowe/Pico-DMX/actions/workflows/Arduino-lint.yml/badge.svg?branch=arduino-port)
 
-A library for outputting the DMX512-A lighting control protocol from a RaspberryPi Pico
+A library for outputting and inputting the DMX512-A lighting control protocol from a RaspberryPi Pico
 
 ## About
 

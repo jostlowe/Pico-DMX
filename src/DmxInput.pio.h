@@ -20,7 +20,7 @@ static const uint16_t DmxInput_program_instructions[] = {
     0x20a0, //  3: wait   1 pin, 0                   
             //     .wrap_target
     0x2020, //  4: wait   0 pin, 0                   
-    0xe527, //  5: set    x, 7                   [5] 
+    0xe427, //  5: set    x, 7                   [4] 
     0x4001, //  6: in     pins, 1                    
     0x0246, //  7: jmp    x--, 6                 [2] 
     0x20a0, //  8: wait   1 pin, 0                   

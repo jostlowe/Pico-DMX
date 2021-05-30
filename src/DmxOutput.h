@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef DMX_H
-#define DMX_H
+#ifndef DMX_OUTPUT_H
+#define DMX_OUTPUT_H
 
 #include <dma.h>
 #include <pio.h>
@@ -13,7 +13,7 @@
 #define DMX_UNIVERSE_SIZE 512
 #define DMX_SM_FREQ 1000000
 
-class Dmx
+class DmxOutput
 {
     uint _prgm_offset;
     uint _pin;

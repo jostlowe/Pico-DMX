@@ -2,6 +2,9 @@
  * Copyright (c) 2021 Jostein Løwer 
  *
  * SPDX-License-Identifier: BSD-3-Clause
+ * 
+ * Description: 
+ * Starts a DMX Output on GPIO pin 0 and sets all channels to max (255)
  */
 
 #include <Arduino.h>
@@ -17,8 +20,8 @@ uint8_t universe[UNIVERSE_LENGTH];
 
 void setup()
 {
-    // Start the DMX Transmitter on GPIO-pin 1
-    dmx.begin(1);
+    // Start the DMX Transmitter on GPIO-pin 0
+    dmx.begin(0);
 
     // Set all channels in the universe to the max allowed value (512)
     for (int i = 0; i < UNIVERSE_LENGTH; i++)

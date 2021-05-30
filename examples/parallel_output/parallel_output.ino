@@ -3,6 +3,9 @@
  * Copyright (c) 2021 Jostein Løwer 
  *
  * SPDX-License-Identifier: BSD-3-Clause
+ * 
+ * Description: 
+ * Starts a 8 DMX Output on GPIO pins 0-7 
  */
 
 #include <Arduino.h>
@@ -18,7 +21,7 @@ uint8_t universe[UNIVERSE_LENGTH];
 
 void setup()
 {
-    // Start the DMX outputs on GPIO-pins 1-8.
+    // Start the DMX outputs on GPIO-pins 0-7.
     // Only 4 outputs can run on a single PIO instance, so
     // the 8 outputs are divided onto the two PIO instances
     // pio0 and pio1

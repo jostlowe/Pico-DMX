@@ -10,7 +10,7 @@
 #include <Arduino.h>
 #include <DmxOutput.h>
 
-// Declare an instance of the DMX transmitter
+// Declare an instance of the DMX Output
 DmxOutput dmx;
 
 // Create a universe that we want to send.
@@ -20,7 +20,7 @@ uint8_t universe[UNIVERSE_LENGTH];
 
 void setup()
 {
-    // Start the DMX Transmitter on GPIO-pin 0
+    // Start the DMX Output on GPIO-pin 0
     dmx.begin(0);
 
     // Set all channels in the universe to the max allowed value (512)

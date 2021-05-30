@@ -26,10 +26,10 @@ void setup()
 
 void loop()
 {
-    // Read a DMX packet into our buffer
+    // Read DMX channels into our buffer
     dmxInput.read(buffer);
 
-    // Print out packet
+    // Print the DMX channels
     Serial.print("Received packet: ");
     for (uint i = 0; i < NUM_CHANNELS; i++)
     {

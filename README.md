@@ -2,7 +2,7 @@
 
 ![example branch parameter](https://github.com/jostlowe/Pico-DMX/actions/workflows/Arduino-lint.yml/badge.svg?branch=arduino-port)
 
-A library for outputing the DMX512-A lighting control protocol from a RaspberryPi Pico
+A library for outputting the DMX512-A lighting control protocol from a RaspberryPi Pico
 
 ## About
 
@@ -23,19 +23,23 @@ The Pico-DMX library should be available in both the Arduino libraries and the P
 The Pico-DMX library can also be manually added to any project in the same way as any other Arduino library. See the [Arduino guide](https://www.arduino.cc/en/guide/libraries) for more information. 
 
 ## Usage
-The library is based around the `Dmx` class, representing a single DMX output. The `Dmx` class is simply instantiated, and requires no further arguments.
+
+The library is based around the `DmxOutput` and `DmxInput` classes, representing a single DMX output or input. 
+
+### Outputting DMX
+The `DmxOutput` class is simply instantiated, and requires no further arguments.
 
 ```C++
-   Dmx myDmxOutput;
+   DmxOutput myDmxOutput;
 ```
 
-After instantiation, the DMX output must be assigned to a pin. The `.begin(uint pin)` method initializes the DMX output and binds it to a pin. To start a DMX output on GPIO1 on the Pico, simply call
+After instantiation, the DMX output must be assigned to a pin. The `.begin(uint pin)` method initializes the DMX output and binds it to a pin. To start a DMX output on GPIO1 on the Pico, call
 
 ```C++
    myDmxOutput.begin(1);
 ```
 
-The library defaults to using `pio0` as the underlying PIO instance. If you want to use `pio1` as the underlying PIO, simply add the PIO you want to use as an argument
+The library defaults to using `pio0` as the underlying PIO instance. If you want to use `pio1` as the underlying PIO, add the PIO you want to use as an argument
 
 ```C++
    myDmxOutput.begin(1, pio1);
@@ -62,8 +66,35 @@ The `.write(...)` method is not blocking, and executes immediately. To check the
    }
 ```
 
-## Voltage Transceivers
-The RPi Pico itself cannot be directly hooked up to your DMX line, as DMX operates on RS485 logic levels, 
-which do not match the voltage levels of the GPIO pins on the RPi Pico. 
+See the [examples](examples/) for complete examples on how to use the DMX output
 
-Fortunately TLL to RS485 transceivers are easily available. Simple transceiver modules can be bought through online retailer for only a couple of dollars. These tend to use the MAX485 series of voltage level transceivers, which work great for most purposes. If you're planning to implement DMX on an industrial level, your device should have some kind of EMC protection. Many RS485 transceivers are available that have galvanic isolation between the TLL side and the RS485 side. These should be the preferred option.
+### Inputting DMX
+The library also enables DMX inputs through the `DmxInput` class. The DMX input can either read an entire universe or just a couple specified channels. Let's say the Pico controls a simple RGB LED, and we want to read the first three channels on the DMX universe to control out RGB LED. First, instantiate your DMX input, specifying what pin you want to use (GPIO 0 in our case), what channel you want to read from (channel 1), and how many channels you want to read (3 channels in total)
+
+```C++
+   DmxInput myDmxInput;
+   uint dmx_pin = 0;
+   uint start_channel = 1;
+   uint num_channels = 3;
+   myDmxInput.begin(dmx_pin, start_channels, num_channels);
+```
+
+The DMX Input is now ready to receive your DMX data. Before we start receiving DMX data, we want to create a buffer where we can keep our received DMX channels:
+
+```C++
+   uint8_t buffer[num_channels]; 
+```
+
+Use the `.read(...)` method to read the 3 channels for our RGB fixture into our buffer.
+
+```C++
+   myDmxInput.read(buffer);
+```
+
+The `.read(...)` method blocks until it receives a valid DMX packet. Much like the `DmxOutput`, the zero'th channel in the DMX packet is the start code. Unless you want to mess around with other protocols such as RDM, the start code can safely be ignored.
+
+## Voltage Transceivers
+The Pico itself cannot be directly hooked up to your DMX line, as DMX operates on RS485 logic levels, 
+which do not match the voltage levels of the GPIO pins on the Pico. 
+
+Fortunately TLL to RS485 transceivers are easily available. Simple transceiver modules can be bought through online retailers for only a couple of dollars. These tend to use the MAX485 series of voltage level transceivers, which work great for most purposes. If you're planning to implement DMX on an industrial level, your device should have some kind of EMC protection. Many RS485 transceivers are available that have galvanic isolation between the TLL side and the RS485 side. These should be the preferred option.

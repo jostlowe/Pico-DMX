@@ -5,10 +5,10 @@
  */
 
 #include <Arduino.h>
-#include <dmx.h>
+#include <DmxOutput.h>
 
 // Declare an instance of the DMX transmitter
-Dmx dmx;
+DmxOutput dmx;
 
 // Create a universe that we want to send.
 // The universe must be maximum 512 bytes

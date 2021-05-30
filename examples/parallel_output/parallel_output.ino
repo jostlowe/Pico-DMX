@@ -6,10 +6,10 @@
  */
 
 #include <Arduino.h>
-#include <dmx.h>
+#include <DmxOutput.h>
 
 // Declare 8 instances of the DMX output
-Dmx dmxOutputs[8];
+DmxOutput dmxOutputs[8];
 
 // Create a universe that we want to send in parallel on all 8 outputs.
 // The universe must be maximum 512 bytes

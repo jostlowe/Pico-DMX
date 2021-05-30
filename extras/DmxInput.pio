@@ -18,7 +18,7 @@ break_loop:                           ; Break loop lasts for 8us. The entire bre
 
 .wrap_target
     wait 0 pin 0                      ; Stall until start bit is asserted
-    set x, 7             [dmx_bit]  ; Preload bit counter, then delay until halfway through
+    set x, 7             [dmx_bit]    ; Preload bit counter, then delay until halfway through
 
 bitloop:                              
     in pins, 1                        ; Shift data bit into ISR

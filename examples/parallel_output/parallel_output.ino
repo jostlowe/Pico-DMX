@@ -15,9 +15,9 @@
 DmxOutput dmxOutputs[8];
 
 // Create a universe that we want to send in parallel on all 8 outputs.
-// The universe must be maximum 512 bytes
+// The universe must be maximum 512 bytes + 1 byte for the start
 #define UNIVERSE_LENGTH 512
-uint8_t universe[UNIVERSE_LENGTH];
+uint8_t universe[UNIVERSE_LENGTH + 1];
 
 void setup()
 {
@@ -41,7 +41,7 @@ void loop()
     // Send out universe on all 8 DMX outputs
     for (int i = 0; i < 8; i++)
     {
-        dmxOutputs[i].write(universe, UNIVERSE_LENGTH);
+        dmxOutputs[i].write(universe, UNIVERSE_LENGTH + 1);
     }
     for (int i = 0; i < 8; i++)
     {

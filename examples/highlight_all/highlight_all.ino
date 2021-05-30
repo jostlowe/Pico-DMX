@@ -14,9 +14,9 @@
 DmxOutput dmx;
 
 // Create a universe that we want to send.
-// The universe must be maximum 512 bytes
+// The universe must be maximum 512 bytes + 1 byte of start code
 #define UNIVERSE_LENGTH 512
-uint8_t universe[UNIVERSE_LENGTH];
+uint8_t universe[UNIVERSE_LENGTH + 1];
 
 void setup()
 {
@@ -24,7 +24,7 @@ void setup()
     dmx.begin(0);
 
     // Set all channels in the universe to the max allowed value (512)
-    for (int i = 0; i < UNIVERSE_LENGTH; i++)
+    for (int i = 1; i < UNIVERSE_LENGTH + 1; i++)
     {
         universe[i] = 255;
     }

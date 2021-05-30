@@ -8,6 +8,7 @@
 #include "DmxInput.pio.h"
 #include <clocks.h>
 #include <irq.h>
+#include <Arduino.h> // REMOVE ME
 
 DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_channels, PIO pio)
 {
@@ -80,6 +81,7 @@ void DmxInput::read(uint8_t *buffer)
     // Restart the PIO state machinge
     pio_sm_set_enabled(_pio, _sm, true);
 
+    // channel_count keeps track of how far into a DMX packet we are
     uint channel_count = 0;
 
     while (channel_count < _start_channel)
@@ -89,11 +91,16 @@ void DmxInput::read(uint8_t *buffer)
         channel_count++;
     }
 
-    while (channel_count <= _end_channel)
+    while (channel_count < _end_channel)
     {
+        int local_index = channel_count - _start_channel;
+
         // Move our channels of interest into the buffer
-        int local_index = _start_channel - channel_count;
-        buffer[local_index] = (uint8_t)pio_sm_get_blocking(_pio, _sm);
+        uint32_t channel = pio_sm_get_blocking(_pio, _sm);
+
+        // Our DMX channel is in the top 8 bits of our uint32_t
+        // Shift the channel 24 bits and cast it to a uint8_t for our buffer
+        buffer[local_index] = (uint8_t)(channel >> 24);
         channel_count++;
     }
     pio_sm_set_enabled(_pio, _sm, false);

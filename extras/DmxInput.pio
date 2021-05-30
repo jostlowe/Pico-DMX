@@ -22,7 +22,7 @@ break_loop:                           ; Break loop lasts for 8us. The entire bre
 
 bitloop:                              
     in pins, 1                        ; Shift data bit into ISR
-    jmp x-- bitloop      [dmx_bit-2]  ; Loop 8 times, each loop iteration is 4us
+    jmp x-- bitloop      [dmx_bit-1]  ; Loop 8 times, each loop iteration is 4us
     wait 1 pin 0                      ; Wait for pin to go high for stop bits
     push                              ; Should probably do error checking on the stop bits some time in the future....
 

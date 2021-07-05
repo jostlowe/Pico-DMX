@@ -25,9 +25,12 @@ void setup()
 
 void loop()
 {
-    // Wait for next DMX packet
-    dmxInput.read();
+    delay(30);
 
+    if(millis() > 100+dmxInput.latest_packet_timestamp()) {
+        Serial.println("no data!");
+        return;
+    }
     // Print the DMX channels
     Serial.print("Received packet: ");
     for (uint i = 0; i < NUM_CHANNELS; i++)

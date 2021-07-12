@@ -15,6 +15,8 @@ int DmxInput::_buffer_size() {
     return num_channels+((4-num_channels%4)%4);
 }
 
+volatile DmxInput *singleton = nullptr;
+
 DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_channels, PIO pio)
 {
     /* 
@@ -73,14 +75,16 @@ DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_cha
 
     _dma_chan = dma_claim_unused_channel(true);
 
-    /*_buf = (volatile uint8_t*)malloc(_buffer_size());
-    if(_buf == nullptr) {
-        return ERR_INSUFFICIENT_SDRAM;
-    }
-    */
+   //initialize with some starting values
     for(int i=0;i<_buffer_size();i++) {
-        ((volatile uint8_t*)_buf)[i] = 20+i;
+        ((volatile uint8_t*)_buf)[i] = i;
     }
+
+    if(singleton != nullptr) {
+        //multiple DmxInput currently not supported
+        return ERR_NO_SM_AVAILABLE;
+    }
+    singleton = this;
 
     read_with_dma();
     return SUCCESS;
@@ -93,8 +97,6 @@ void DmxInput::read()
         tight_loop_contents();
     }
 }
-
-volatile DmxInput *singleton;
 
 void dmxinput_dma_handler() {
     dma_hw->ints0 = 1u << singleton->_dma_chan;
@@ -134,8 +136,6 @@ void DmxInput::read_with_dma() {
         _buffer_size()/4,  // transfer count,
         false
     );
-
-    singleton = this;
 
     dma_channel_set_irq0_enabled(_sm, true);
     irq_set_exclusive_handler(DMA_IRQ_0, dmxinput_dma_handler);

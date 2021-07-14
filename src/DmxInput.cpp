@@ -32,6 +32,7 @@ DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_cha
             return ERR_INSUFFICIENT_PRGM_MEM;
         }
         prgm_offsets[pio_ind] = pio_add_program(pio, &DmxInput_program);
+        prgm_loaded[pio_ind] = true;
     }
 
     /* 

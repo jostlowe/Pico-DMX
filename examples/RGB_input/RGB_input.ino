@@ -14,6 +14,8 @@ DmxInput dmxInput;
 #define START_CHANNEL 1
 #define NUM_CHANNELS 3
 
+volatile uint8_t buffer[DMXINPUT_BUFFER_SIZE(START_CHANNEL, NUM_CHANNELS)];
+
 void setup()
 {
     // Setup our DMX Input to read on GPIO 0, from channel 1 to 3
@@ -26,13 +28,13 @@ void setup()
 void loop()
 {
     // Wait for next DMX packet
-    dmxInput.read();
+    dmxInput.read(buffer);
 
     // Print the DMX channels
     Serial.print("Received packet: ");
-    for (uint i = 0; i < NUM_CHANNELS; i++)
+    for (uint i = 0; i < sizeof(buffer); i++)
     {
-        Serial.print(dmxInput.get_channel(i));
+        Serial.print(buffer[i]);
         Serial.print(", ");
     }
     Serial.println("");

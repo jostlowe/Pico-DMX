@@ -10,11 +10,6 @@
 #include <irq.h>
 #include <Arduino.h> // REMOVE ME
 
-int DmxInput::_buffer_size() {
-    int num_channels = _end_channel+1;
-    return num_channels+((4-num_channels%4)%4);
-}
-
 volatile DmxInput *singleton = nullptr;
 
 DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_channels, PIO pio)
@@ -71,14 +66,10 @@ DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_cha
     _sm = sm;
     _pin = pin;
     _start_channel = start_channel;
-    _end_channel = start_channel + num_channels;
+    _num_channels = num_channels;
+    _buf = nullptr;
 
     _dma_chan = dma_claim_unused_channel(true);
-
-   //initialize with some starting values
-    for(int i=0;i<_buffer_size();i++) {
-        ((volatile uint8_t*)_buf)[i] = i;
-    }
 
     if(singleton != nullptr) {
         //multiple DmxInput currently not supported
@@ -86,12 +77,14 @@ DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_cha
     }
     singleton = this;
 
-    read_with_dma();
     return SUCCESS;
 }
 
-void DmxInput::read()
+void DmxInput::read(volatile uint8_t *buffer)
 {
+    if(_buf==nullptr) {
+        read_async(buffer);
+    }
     unsigned long start = _last_packet_timestamp;
     while(_last_packet_timestamp == start) {
         tight_loop_contents();
@@ -106,7 +99,9 @@ void dmxinput_dma_handler() {
     singleton->_last_packet_timestamp = millis();
 }
 
-void DmxInput::read_with_dma() {
+void DmxInput::read_async(volatile uint8_t *buffer) {
+
+    _buf = buffer;
 
     pio_sm_set_enabled(_pio, _sm, false);
 
@@ -133,7 +128,7 @@ void DmxInput::read_with_dma() {
         &cfg,
         NULL,    // dst
         &_pio->rxf[_sm],  // src
-        _buffer_size()/4,  // transfer count,
+        DMXINPUT_BUFFER_SIZE(_start_channel, _num_channels)/4,  // transfer count,
         false
     );
 
@@ -147,10 +142,6 @@ void DmxInput::read_with_dma() {
     //pio_sm_put_blocking(_pio, _sm, (_end_channel) - 1);
     dmxinput_dma_handler();
     pio_sm_set_enabled(_pio, _sm, true);
-}
-
-uint8_t DmxInput::get_channel(int16_t index){
-    return ((volatile uint8_t*)_buf)[index];
 }
 
 unsigned long DmxInput::latest_packet_timestamp() {
@@ -168,5 +159,5 @@ void DmxInput::end()
     // Unclaim the sm
     pio_sm_unclaim(_pio, _sm);
 
-    free((void*)_buf);
+    _buf = nullptr;
 }

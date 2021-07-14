@@ -14,24 +14,18 @@
 #define DMX_UNIVERSE_SIZE 512
 #define DMX_SM_FREQ 1000000
 
-
+#define DMXINPUT_BUFFER_SIZE(start_channel, num_channels) ((start_channel+num_channels+1)+((4-(start_channel+num_channels+1)%4)%4))
 class DmxInput
 {
     uint _pin;   
     int32_t _start_channel;
-    int32_t _end_channel;
-    int _buffer_size();
-    /*
-    Setup and start dma transfer that will continously read DMX data and keep writing it into the buffer.
-    This function only needs to be called once, from then on the buffer will always contain the latest DMX data.
-    */
-    void read_with_dma();
+    int32_t _num_channels;
     
 public:
     /*
     private properties that are declared public so the interrupt handler has access
     */
-    volatile uint8_t _buf[512];
+    volatile uint8_t *_buf;
     volatile PIO _pio;
     volatile uint _sm;
     volatile uint _dma_chan;
@@ -83,11 +77,14 @@ public:
     return_code begin(uint pin, uint start_channel, uint num_channels, PIO pio = pio0);
 
     /*
-        Get the latest data for the specified channel.
-        Channel 0 is the start code and should always be 0.
+    Wait until a new DMX frame is received. The data may be fetched using get_channel()
     */
+    void read(volatile uint8_t *buffer);
 
-    uint8_t get_channel(int16_t index);
+    /*
+    Start async read process. This should only be called once. From then on, the buffer will always contain the latest DMX data.
+    */
+    void read_async(volatile uint8_t *buffer);
 
     /*
         Get the timestamp (like millis()) from the moment the latest dmx packet was received.
@@ -95,12 +92,6 @@ public:
     */
 
     unsigned long latest_packet_timestamp();
-
-
-    /*
-    Wait until a new DMX frame is received. The data may be fetched using get_channel()
-    */
-    void read();
 
     /*
         De-inits the DMX input instance. Releases PIO resources. 

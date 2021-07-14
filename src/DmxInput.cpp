@@ -10,19 +10,29 @@
 #include <irq.h>
 #include <Arduino.h> // REMOVE ME
 
-volatile DmxInput *singleton = nullptr;
+bool prgm_loaded[] = {false,false};
+uint prgm_offsets[] = {0,0};
+/*
+This array tells the interrupt handler which instance has interrupted.
+The interrupt handler has only the ints0 register to go on, so this array needs as many spots as there are DMA channels. 
+*/
+#define NUM_DMA_CHANS 12
+volatile DmxInput *active_inputs[NUM_DMA_CHANS] = {nullptr};
 
 DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_channels, PIO pio)
 {
-    /* 
-    Attempt to load the DMX PIO assembly program into the PIO program memory
-    */
+    uint pio_ind = pio_get_index(pio);
+    if(!prgm_loaded[pio_ind]) {
+        /* 
+        Attempt to load the DMX PIO assembly program into the PIO program memory
+        */
 
-    if (!pio_can_add_program(pio, &DmxInput_program))
-    {
-        return ERR_INSUFFICIENT_PRGM_MEM;
+        if (!pio_can_add_program(pio, &DmxInput_program))
+        {
+            return ERR_INSUFFICIENT_PRGM_MEM;
+        }
+        prgm_offsets[pio_ind] = pio_add_program(pio, &DmxInput_program);
     }
-    uint prgm_offset = pio_add_program(pio, &DmxInput_program);
 
     /* 
     Attempt to claim an unused State Machine into the PIO program memory
@@ -40,7 +50,7 @@ DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_cha
     gpio_pull_up(pin);
 
     // Generate the default PIO state machine config provided by pioasm
-    pio_sm_config sm_conf = DmxInput_program_get_default_config(prgm_offset);
+    pio_sm_config sm_conf = DmxInput_program_get_default_config(prgm_offsets[pio_ind]);
     sm_config_set_in_pins(&sm_conf, pin); // for WAIT, IN
     sm_config_set_jmp_pin(&sm_conf, pin); // for JMP
 
@@ -55,13 +65,11 @@ DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_cha
     sm_config_set_clkdiv(&sm_conf, clk_div);
 
     // Load our configuration, jump to the start of the program and run the State Machine
-    pio_sm_init(pio, sm, prgm_offset, &sm_conf);
+    pio_sm_init(pio, sm, prgm_offsets[pio_ind], &sm_conf);
     //sm_config_set_in_shift(&c, true, false, n_bits)
 
     //pio_sm_put_blocking(pio, sm, (start_channel + num_channels) - 1);
 
-    // Set member values of class
-    _prgm_offset = prgm_offset;
     _pio = pio;
     _sm = sm;
     _pin = pin;
@@ -71,11 +79,11 @@ DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_cha
 
     _dma_chan = dma_claim_unused_channel(true);
 
-    if(singleton != nullptr) {
-        //multiple DmxInput currently not supported
+
+    if(active_inputs[_dma_chan] != nullptr) {
         return ERR_NO_SM_AVAILABLE;
     }
-    singleton = this;
+    active_inputs[_dma_chan] = this;
 
     return SUCCESS;
 }
@@ -92,11 +100,16 @@ void DmxInput::read(volatile uint8_t *buffer)
 }
 
 void dmxinput_dma_handler() {
-    dma_hw->ints0 = 1u << singleton->_dma_chan;
-    dma_channel_set_write_addr(singleton->_dma_chan, singleton->_buf, true);
-    pio_sm_exec(singleton->_pio, singleton->_sm, pio_encode_jmp(singleton->_prgm_offset));
-    pio_sm_clear_fifos(singleton->_pio, singleton->_sm);
-    singleton->_last_packet_timestamp = millis();
+    for(int i=0;i<NUM_DMA_CHANS;i++) {
+        if(active_inputs[i]!=nullptr && (dma_hw->ints0 & (1u<<i))) {
+            dma_hw->ints0 = 1u << i;
+            volatile DmxInput *instance = active_inputs[i];
+            dma_channel_set_write_addr(i, instance->_buf, true);
+            pio_sm_exec(instance->_pio, instance->_sm, pio_encode_jmp(instance->_prgm_offset));
+            pio_sm_clear_fifos(instance->_pio, instance->_sm);
+            instance->_last_packet_timestamp = millis();
+        }
+    }
 }
 
 void DmxInput::read_async(volatile uint8_t *buffer) {
@@ -154,10 +167,28 @@ void DmxInput::end()
     pio_sm_set_enabled(_pio, _sm, false);
 
     // Remove the PIO DMX program from the PIO program memory
-    pio_remove_program(_pio, &DmxInput_program, _prgm_offset);
+    uint pio_id = pio_get_index(_pio);
+    bool inuse = false;
+    for(uint i=0;i<NUM_DMA_CHANS;i++) {
+        if(i==_dma_chan) {
+            continue;
+        }
+        if(pio_id == pio_get_index(active_inputs[i]->_pio)) {
+            inuse = true;
+            break;
+        }
+    }
+    if(!inuse) {
+        prgm_loaded[pio_id] = false;
+        pio_remove_program(_pio, &DmxInput_program, prgm_offsets[pio_id]);
+        prgm_offsets[pio_id]=0;
+    }
 
     // Unclaim the sm
     pio_sm_unclaim(_pio, _sm);
+
+    dma_channel_unclaim(_dma_chan);
+    active_inputs[_dma_chan] = nullptr;
 
     _buf = nullptr;
 }

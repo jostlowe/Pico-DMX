@@ -11,7 +11,7 @@
 #include <Arduino.h> // REMOVE ME
 
 bool prgm_loaded[] = {false,false};
-uint prgm_offsets[] = {0,0};
+volatile uint prgm_offsets[] = {0,0};
 /*
 This array tells the interrupt handler which instance has interrupted.
 The interrupt handler has only the ints0 register to go on, so this array needs as many spots as there are DMA channels. 
@@ -106,7 +106,7 @@ void dmxinput_dma_handler() {
             dma_hw->ints0 = 1u << i;
             volatile DmxInput *instance = active_inputs[i];
             dma_channel_set_write_addr(i, instance->_buf, true);
-            pio_sm_exec(instance->_pio, instance->_sm, pio_encode_jmp(instance->_prgm_offset));
+            pio_sm_exec(instance->_pio, instance->_sm, pio_encode_jmp(prgm_offsets[pio_get_index(instance->_pio)]));
             pio_sm_clear_fifos(instance->_pio, instance->_sm);
             instance->_last_packet_timestamp = millis();
         }
@@ -123,7 +123,7 @@ void DmxInput::read_async(volatile uint8_t *buffer) {
     pio_sm_restart(_pio, _sm);
 
     // Start the DMX PIO program from the beginning
-    pio_sm_exec(_pio, _sm, pio_encode_jmp(_prgm_offset));
+    pio_sm_exec(_pio, _sm, pio_encode_jmp(prgm_offsets[pio_get_index(_pio)]));
 
     //setup dma
     dma_channel_config cfg = dma_channel_get_default_config(_dma_chan);

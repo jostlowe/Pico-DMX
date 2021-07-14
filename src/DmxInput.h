@@ -29,7 +29,6 @@ public:
     volatile PIO _pio;
     volatile uint _sm;
     volatile uint _dma_chan;
-    volatile uint _prgm_offset;
     volatile unsigned long _last_packet_timestamp=0;
     /*
         All different return codes for the DMX class. Only the SUCCESS

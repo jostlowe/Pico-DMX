@@ -75,8 +75,8 @@ public:
     void read(volatile uint8_t *buffer);
 
     /*
-    Start async read process. This should only be called once.
-    From then on, the buffer will always contain the latest DMX data.
+        Start async read process. This should only be called once.
+        From then on, the buffer will always contain the latest DMX data.
     */
     void read_async(volatile uint8_t *buffer);
 

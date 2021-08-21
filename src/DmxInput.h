@@ -59,29 +59,25 @@ public:
        defaults to pio0. pio0 can run up to 3
        DMX input instances. If you really need more, you can
        run 3 more on pio1  
-
-       Param: ring_size
-       sets number of dmx channels to receive.
-       ring_size==2 -> channels 0 through 3
-       ring_size==3 -> channels 0 through 7
-       ring_size==4 -> channels 0 through 15
-       ring_size==5 -> channels 0 through 31
-       ring_size==6 -> channels 0 through 63
-       ring_size==7 -> channels 0 through 127
-       ring_size==8 -> channels 0 through 255
-       ring_size==9 -> channels 0 through 511
-       Note that channel 0 is not really useful and should always have the value 0.
     */
 
     return_code begin(uint pin, uint start_channel, uint num_channels, PIO pio = pio0);
 
     /*
-    Wait until a new DMX frame is received. The data may be fetched using get_channel()
+        Read the selected channels from .begin(...) into a buffer.
+        Method call blocks until the selected channels have been received
+
+        Param: buffer
+        A pointer to the location where the channels should be received 
+        The buffer should have a max length of
+        513 bytes (1 byte start code + 512 bytes frame). For ordinary
+        DMX data frames, the start code should be 0x00.
     */
     void read(volatile uint8_t *buffer);
 
     /*
-    Start async read process. This should only be called once. From then on, the buffer will always contain the latest DMX data.
+    Start async read process. This should only be called once.
+    From then on, the buffer will always contain the latest DMX data.
     */
     void read_async(volatile uint8_t *buffer);
 

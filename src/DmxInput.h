@@ -45,8 +45,7 @@ public:
 
         // There is not enough program memory left in the PIO to fit
         // The DMX PIO program
-        ERR_INSUFFICIENT_PRGM_MEM = -2,
-        ERR_INSUFFICIENT_SDRAM = -3,
+        ERR_INSUFFICIENT_PRGM_MEM = -2
     };
 
     /*

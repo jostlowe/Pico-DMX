@@ -1,0 +1,21 @@
+.program DmxInput
+
+//wait for high, then low for at least 87 us (29*3), then high again
+//1st high is MARK TIME BETWEEN PACKETS (or Idle)
+//87us low is the Break
+//then finally the start of the MARK AFTER BREAK
+start_of_break:
+set    x, 29              
+within_break:
+jmp    pin, start_of_break
+jmp    x--, within_break      [1] 
+wait   1 pin, 0                
+.wrap_target
+wait   0 pin, 0  //wait for end of MAB (on first frame), or MTBF
+set    x, 7                   [4] //receive 8 bits (7+1 with post-decrement). delay to let the start bit elapse
+read_bit:
+in     pins, 1                    //read and decrement loop with 4us execution time
+jmp    x--, read_bit                 [2]
+wait   1 pin, 0  //wait for stop bits to start
+push   IfFull
+.wrap

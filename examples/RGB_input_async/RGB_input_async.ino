@@ -20,6 +20,7 @@ void setup()
 {
     // Setup our DMX Input to read on GPIO 0, from channel 1 to 3
     dmxInput.begin(0, START_CHANNEL, NUM_CHANNELS);
+    dmxInput.read_async(buffer);
 
     // Setup the onboard LED so that we can blink when we receives packets
     pinMode(LED_BUILTIN, OUTPUT);
@@ -27,9 +28,12 @@ void setup()
 
 void loop()
 {
-    // Wait for next DMX packet
-    dmxInput.read(buffer);
+    delay(30);
 
+    if(millis() > 100+dmxInput.latest_packet_timestamp()) {
+        Serial.println("no data!");
+        return;
+    }
     // Print the DMX channels
     Serial.print("Received packet: ");
     for (uint i = 0; i < sizeof(buffer); i++)

@@ -146,7 +146,7 @@ void DmxInput::read_async(volatile uint8_t *buffer) {
         false
     );
 
-    dma_channel_set_irq0_enabled(_sm, true);
+    dma_channel_set_irq0_enabled(_dma_chan, true);
     irq_set_exclusive_handler(DMA_IRQ_0, dmxinput_dma_handler);
     irq_set_enabled(DMA_IRQ_0, true);
 

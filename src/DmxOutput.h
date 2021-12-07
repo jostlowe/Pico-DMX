@@ -7,8 +7,13 @@
 #ifndef DMX_OUTPUT_H
 #define DMX_OUTPUT_H
 
+#ifdef ARDUINO
 #include <dma.h>
 #include <pio.h>
+#else
+#include "hardware/dma.h"
+#include "hardware/pio.h"
+#endif
 
 #define DMX_UNIVERSE_SIZE 512
 #define DMX_SM_FREQ 1000000

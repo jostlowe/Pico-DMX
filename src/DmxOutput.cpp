@@ -7,8 +7,13 @@
 
 #include "DmxOutput.h"
 #include "DmxOutput.pio.h"
+#ifdef ARDUINO
 #include <clocks.h>
 #include <irq.h>
+#else
+#include "hardware/clocks.h"
+#include "hardware/irq.h"
+#endif
 
 DmxOutput::return_code DmxOutput::begin(uint pin, PIO pio)
 {

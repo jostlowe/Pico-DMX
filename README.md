@@ -94,6 +94,20 @@ Use the `.read(...)` method to read the 3 channels for our RGB fixture into our 
 
 The `.read(...)` method blocks until it receives a valid DMX packet. Much like the `DmxOutput`, the zero'th channel in the DMX packet is the start code. Unless you want to mess around with other protocols such as RDM, the start code can safely be ignored.
 
+As an alternative to the blocking `.read(...)` method, you can also start asynchronous buffer updates via the 
+ `.read_async(...)` method. This way, the buffer is automatically updated when DMX data comes in.
+ Optionally, you can also pass a pointer to a callback-function that will be called everytime a new DMX 
+ frame has been received, processed and has been written to the buffer.
+
+```C++
+   void dmxDataRecevied() {
+     // A DMX frame has been received. Toggle some LED
+     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+   }
+
+   myDmxInput.read_async(buffer, dmxDataRecevied);
+```
+
 ## Voltage Transceivers
 The Pico itself cannot be directly hooked up to your DMX line, as DMX operates on RS485 logic levels, 
 which do not match the voltage levels of the GPIO pins on the Pico. 

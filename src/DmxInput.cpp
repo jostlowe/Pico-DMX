@@ -6,9 +6,15 @@
 
 #include "DmxInput.h"
 #include "DmxInput.pio.h"
+#ifdef ARDUINO
 #include <clocks.h>
 #include <irq.h>
 #include <Arduino.h> // REMOVE ME
+#else
+#include "pico/time.h"
+#include "hardware/clocks.h"
+#include "hardware/irq.h"
+#endif
 
 bool prgm_loaded[] = {false,false};
 volatile uint prgm_offsets[] = {0,0};
@@ -108,7 +114,11 @@ void dmxinput_dma_handler() {
             dma_channel_set_write_addr(i, instance->_buf, true);
             pio_sm_exec(instance->_pio, instance->_sm, pio_encode_jmp(prgm_offsets[pio_get_index(instance->_pio)]));
             pio_sm_clear_fifos(instance->_pio, instance->_sm);
+#ifdef ARDUINO
             instance->_last_packet_timestamp = millis();
+#else
+            instance->_last_packet_timestamp = to_ms_since_boot(get_absolute_time());
+#endif
         }
     }
 }

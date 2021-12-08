@@ -83,6 +83,7 @@ DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_cha
     _start_channel = start_channel;
     _num_channels = num_channels;
     _buf = nullptr;
+    _cb = nullptr;
 
     _dma_chan = dma_claim_unused_channel(true);
 
@@ -119,13 +120,20 @@ void dmxinput_dma_handler() {
 #else
             instance->_last_packet_timestamp = to_ms_since_boot(get_absolute_time());
 #endif
+            // Trigger the callback if we have one
+            if (instance->_cb != nullptr) {
+                (*(instance->_cb))();
+            }
         }
     }
 }
 
-void DmxInput::read_async(volatile uint8_t *buffer) {
+void DmxInput::read_async(volatile uint8_t *buffer, void (*inputUpdatedCallback)(void)) {
 
     _buf = buffer;
+    if (inputUpdatedCallback!=nullptr) {
+        _cb = inputUpdatedCallback;
+    }
 
     pio_sm_set_enabled(_pio, _sm, false);
 

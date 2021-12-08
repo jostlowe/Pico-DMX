@@ -35,6 +35,7 @@ public:
     volatile uint _sm;
     volatile uint _dma_chan;
     volatile unsigned long _last_packet_timestamp=0;
+    void (*_cb)(void);
     /*
         All different return codes for the DMX class. Only the SUCCESS
         Return code guarantees that the DMX output instance was properly configured
@@ -83,7 +84,7 @@ public:
         Start async read process. This should only be called once.
         From then on, the buffer will always contain the latest DMX data.
     */
-    void read_async(volatile uint8_t *buffer);
+    void read_async(volatile uint8_t *buffer, void (*inputUpdatedCallback)(void) = nullptr);
 
     /*
         Get the timestamp (like millis()) from the moment the latest dmx packet was received.

@@ -18,7 +18,7 @@ This library implements a DMX input and DMX output for the RPi Pico, leveraging 
 
 
 ## Installation
-The Pico-DMX library should be available in both the Arduino libraries and the PlatformIO libraries
+The Pico-DMX library should be available in both the Arduino libraries and the PlatformIO libraries. Pico-DMX can also be used in `pico-sdk`-based projects.
 
 The Pico-DMX library can also be manually added to any project in the same way as any other Arduino library. See the [Arduino guide](https://www.arduino.cc/en/guide/libraries) for more information. 
 

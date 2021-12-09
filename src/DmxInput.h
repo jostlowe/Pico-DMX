@@ -83,6 +83,8 @@ public:
     /*
         Start async read process. This should only be called once.
         From then on, the buffer will always contain the latest DMX data.
+        If you want to be notified whenever a new DMX frame has been received,
+        provide a callback function that will be called without arguments.
     */
     void read_async(volatile uint8_t *buffer, void (*inputUpdatedCallback)(void) = nullptr);
 

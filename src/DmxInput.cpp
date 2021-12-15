@@ -63,7 +63,7 @@ DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_cha
 
     // Setup the side-set pins for the PIO state machine
     // Shift to right, autopush disabled
-    sm_config_set_in_shift(&sm_conf, true, false, 32);
+    sm_config_set_in_shift(&sm_conf, true, false, 8);
     // Deeper FIFO as we're not doing any TX
     sm_config_set_fifo_join(&sm_conf, PIO_FIFO_JOIN_RX);
 
@@ -88,7 +88,7 @@ DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_cha
     _dma_chan = dma_claim_unused_channel(true);
 
 
-    if(active_inputs[_dma_chan] != nullptr) {
+    if (active_inputs[_dma_chan] != nullptr) {
         return ERR_NO_SM_AVAILABLE;
     }
     active_inputs[_dma_chan] = this;
@@ -144,7 +144,7 @@ void DmxInput::read_async(volatile uint8_t *buffer, void (*inputUpdatedCallback)
     dma_channel_config cfg = dma_channel_get_default_config(_dma_chan);
 
     // Reading from constant address, writing to incrementing byte addresses
-    channel_config_set_transfer_data_size(&cfg, DMA_SIZE_32);
+    channel_config_set_transfer_data_size(&cfg, DMA_SIZE_8);
     channel_config_set_read_increment(&cfg, false);
     channel_config_set_write_increment(&cfg, true);
 
@@ -157,7 +157,7 @@ void DmxInput::read_async(volatile uint8_t *buffer, void (*inputUpdatedCallback)
         &cfg,
         NULL,    // dst
         &_pio->rxf[_sm],  // src
-        DMXINPUT_BUFFER_SIZE(_start_channel, _num_channels)/4,  // transfer count,
+        DMXINPUT_BUFFER_SIZE(_start_channel, _num_channels),  // transfer count,
         false
     );
 

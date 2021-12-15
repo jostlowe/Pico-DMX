@@ -140,9 +140,6 @@ void DmxInput::read_async(volatile uint8_t *buffer, void (*inputUpdatedCallback)
     // Reset the PIO state machine to a consistent state. Clear the buffers and registers
     pio_sm_restart(_pio, _sm);
 
-    // Start the DMX PIO program from the beginning
-    pio_sm_exec(_pio, _sm, pio_encode_jmp(prgm_offsets[pio_get_index(_pio)]));
-
     //setup dma
     dma_channel_config cfg = dma_channel_get_default_config(_dma_chan);
 
@@ -168,11 +165,16 @@ void DmxInput::read_async(volatile uint8_t *buffer, void (*inputUpdatedCallback)
     irq_set_exclusive_handler(DMA_IRQ_0, dmxinput_dma_handler);
     irq_set_enabled(DMA_IRQ_0, true);
 
-    
-
     //aaand start!
-    //pio_sm_put_blocking(_pio, _sm, (_end_channel) - 1);
-    dmxinput_dma_handler();
+    dma_channel_set_write_addr(_dma_chan, buffer, true);
+    pio_sm_exec(_pio, _sm, pio_encode_jmp(prgm_offsets[pio_get_index(_pio)]));
+    pio_sm_clear_fifos(_pio, _sm);
+#ifdef ARDUINO
+    _last_packet_timestamp = millis();
+#else
+    _last_packet_timestamp = to_ms_since_boot(get_absolute_time());
+#endif
+
     pio_sm_set_enabled(_pio, _sm, true);
 }
 

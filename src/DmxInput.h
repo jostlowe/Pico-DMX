@@ -19,13 +19,13 @@
 #define DMX_UNIVERSE_SIZE 512
 #define DMX_SM_FREQ 1000000
 
-#define DMXINPUT_BUFFER_SIZE(start_channel, num_channels) ((start_channel+num_channels+1)+((4-(start_channel+num_channels+1)%4)%4))
+#define DMXINPUT_BUFFER_SIZE(start_channel, num_channels) (num_channels+1)
 class DmxInput
 {
-    uint _pin;   
+    uint _pin;
     int32_t _start_channel;
     int32_t _num_channels;
-    
+
 public:
     /*
     private properties that are declared public so the interrupt handler has access

@@ -26,7 +26,7 @@ static const uint16_t DmxInput_program_instructions[] = {
     0x4001, //  6: in     pins, 1                    
     0x0246, //  7: jmp    x--, 6                 [2] 
     0x20a0, //  8: wait   1 pin, 0                   
-    0x4018, //  9: in     pins, 24                   
+    0x4078, //  9: in     null, 24                   
     0x8020, // 10: push   block                      
             //     .wrap
 };

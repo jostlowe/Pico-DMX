@@ -35,7 +35,7 @@ public:
     volatile uint _sm;
     volatile uint _dma_chan;
     volatile unsigned long _last_packet_timestamp=0;
-    void (*_cb)(void);
+    void (*_cb)(DmxInput*);
     /*
         All different return codes for the DMX class. Only the SUCCESS
         Return code guarantees that the DMX output instance was properly configured
@@ -86,14 +86,19 @@ public:
         If you want to be notified whenever a new DMX frame has been received,
         provide a callback function that will be called without arguments.
     */
-    void read_async(volatile uint8_t *buffer, void (*inputUpdatedCallback)(void) = nullptr);
+    void read_async(volatile uint8_t *buffer, void (*inputUpdatedCallback)(DmxInput* instance) = nullptr);
 
     /*
         Get the timestamp (like millis()) from the moment the latest dmx packet was received.
         May be used to detect if the dmx signal has stopped coming in.
     */
-
     unsigned long latest_packet_timestamp();
+
+    /*
+        Get the pin this instance is listening on
+    */
+    uint pin();
+
 
     /*
         De-inits the DMX input instance. Releases PIO resources. 

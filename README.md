@@ -108,6 +108,13 @@ As an alternative to the blocking `.read(...)` method, you can also start asynch
    myDmxInput.read_async(buffer, dmxDataRecevied);
 ```
 
+### A note on DMX interfaces sending "partial universes" (= fewer channels)
+There are multiple universes that can be configured to send less than 512 channels per frame. Some interfaces do this automatically without an option to configure this feature.
+
+The reason why this is done is that if not all channels of a universe are in use, one can send a "shorter" frame but send this frame more often per second (= increase the refresh rate). The specification of DMX512 allows this.
+
+The problem arises if `start_channel + num_channels` is larger than the number of channels sent by the interface since the code of DmxInput waits for this specific amount of channels until the callback is being triggered. So if the amount of channels arriving at the input, the callback will be triggered at a later point in time, not at the end of a DMX frame.
+
 ## Voltage Transceivers
 The Pico itself cannot be directly hooked up to your DMX line, as DMX operates on RS485 logic levels, 
 which do not match the voltage levels of the GPIO pins on the Pico. 

@@ -122,13 +122,13 @@ void dmxinput_dma_handler() {
 #endif
             // Trigger the callback if we have one
             if (instance->_cb != nullptr) {
-                (*(instance->_cb))();
+                (*(instance->_cb))((DmxInput*)instance);
             }
         }
     }
 }
 
-void DmxInput::read_async(volatile uint8_t *buffer, void (*inputUpdatedCallback)(void)) {
+void DmxInput::read_async(volatile uint8_t *buffer, void (*inputUpdatedCallback)(DmxInput*)) {
 
     _buf = buffer;
     if (inputUpdatedCallback!=nullptr) {
@@ -178,6 +178,10 @@ void DmxInput::read_async(volatile uint8_t *buffer, void (*inputUpdatedCallback)
 
 unsigned long DmxInput::latest_packet_timestamp() {
     return _last_packet_timestamp;
+}
+
+uint DmxInput::pin() {
+    return _pin;
 }
 
 void DmxInput::end()

@@ -6,14 +6,15 @@
 
 #include "DmxInput.h"
 #include "DmxInput.pio.h"
-#ifdef ARDUINO
-#include <clocks.h>
-#include <irq.h>
-#include <Arduino.h> // REMOVE ME
+
+#if defined(ARDUINO_ARCH_MBED)
+  #include <clocks.h>
+  #include <irq.h>
+  #include <Arduino.h> // REMOVE ME
 #else
-#include "pico/time.h"
-#include "hardware/clocks.h"
-#include "hardware/irq.h"
+  #include "pico/time.h"
+  #include "hardware/clocks.h"
+  #include "hardware/irq.h"
 #endif
 
 bool prgm_loaded[] = {false,false};

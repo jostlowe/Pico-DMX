@@ -8,12 +8,13 @@
 #ifndef DMX_INPUT_H
 #define DMX_INPUT_H
 
-#ifdef ARDUINO
-#include <dma.h>
-#include <pio.h>
+#if defined(ARDUINO_ARCH_MBED)
+  #include <dma.h>
+  #include <pio.h>
 #else
-#include "hardware/dma.h"
-#include "hardware/pio.h"
+  #include <Arduino.h>
+  #include "hardware/dma.h"
+  #include "hardware/pio.h"
 #endif
 
 #define DMX_UNIVERSE_SIZE 512

@@ -92,7 +92,7 @@ Use the `.read(...)` method to read the 3 channels for our RGB fixture into our 
    myDmxInput.read(buffer);
 ```
 
-The `.read(...)` method blocks until it receives a valid DMX packet. Much like the `DmxOutput`, the zero'th channel in the DMX packet is the start code. Unless you want to mess around with other protocols such as RDM, the start code can safely be ignored.
+The `.read(...)` method blocks until it receives a valid DMX packet. Much like the `DmxOutput`, the zero'th channel in the DMX packet is the start code. You should always check that the start code is the one defined for DMX (zero) to ensure you have a valid DMX packet, unless you are messing around with other protocols such as RDM, in which case check it is their valid start codes.
 
 As an alternative to the blocking `.read(...)` method, you can also start asynchronous buffer updates via the `.read_async(...)` method. This way, the buffer is automatically updated when DMX data comes in.
 Optionally, you can also pass a pointer to a callback-function that will be called everytime a new DMX frame has been received, processed and has been written to the buffer. This callback-function will be called with one parameter which is the instance that has received the new data. This way, you can use one callback-function to react on data from multiple universes. See this example below:

@@ -12,7 +12,9 @@
   #include <dma.h>
   #include <pio.h>
 #else
-  #include <Arduino.h>
+  #ifdef ARDUINO
+    #include <Arduino.h>
+  #endif
   #include "hardware/dma.h"
   #include "hardware/pio.h"
 #endif

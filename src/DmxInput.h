@@ -8,8 +8,13 @@
 #ifndef DMX_INPUT_H
 #define DMX_INPUT_H
 
+#ifdef ARDUINO_ARCH_RP2040
+#include <hardware/dma.h>
+#include <hardware/pio.h>
+#else
 #include <dma.h>
 #include <pio.h>
+#endif
 
 #define DMX_UNIVERSE_SIZE 512
 #define DMX_SM_FREQ 1000000

@@ -7,8 +7,14 @@
 
 #include "DmxOutput.h"
 #include "DmxOutput.pio.h"
+#ifdef ARDUINO_ARCH_RP2040
+#include <hardware/clocks.h>
+#include <hardware/irq.h>
+#else
 #include <clocks.h>
 #include <irq.h>
+#endif
+
 
 DmxOutput::return_code DmxOutput::begin(uint pin, PIO pio)
 {

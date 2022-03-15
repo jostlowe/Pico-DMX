@@ -6,8 +6,14 @@
 
 #include "DmxInput.h"
 #include "DmxInput.pio.h"
+
+#ifdef ARDUINO_ARCH_RP2040
+#include <hardware/clocks.h>
+#include <hardware/irq.h>
+#else
 #include <clocks.h>
 #include <irq.h>
+#endif
 #include <Arduino.h> // REMOVE ME
 
 bool prgm_loaded[] = {false,false};

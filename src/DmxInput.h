@@ -26,8 +26,6 @@
 class DmxInput
 {
     uint _pin;
-    int32_t _start_channel;
-    int32_t _num_channels;
 
 public:
     /*
@@ -38,6 +36,9 @@ public:
     volatile uint _sm;
     volatile uint _dma_chan;
     volatile unsigned long _last_packet_timestamp=0;
+    volatile bool _inverted = false;
+    volatile int32_t _start_channel;
+    volatile int32_t _num_channels;
     void (*_cb)(DmxInput*);
     /*
         All different return codes for the DMX class. Only the SUCCESS
@@ -69,7 +70,7 @@ public:
        run 3 more on pio1  
     */
 
-    return_code begin(uint pin, uint start_channel, uint num_channels, PIO pio = pio0);
+    return_code begin(uint pin, uint start_channel, uint num_channels, PIO pio = pio0, bool inverted = false);
 
     /*
         Read the selected channels from .begin(...) into a buffer.

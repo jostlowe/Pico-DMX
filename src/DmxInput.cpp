@@ -6,6 +6,7 @@
 
 #include "DmxInput.h"
 #include "DmxInput.pio.h"
+#include "DmxInputInverted.pio.h"
 
 #if defined(ARDUINO_ARCH_MBED)
   #include <clocks.h>
@@ -26,19 +27,28 @@ The interrupt handler has only the ints0 register to go on, so this array needs 
 #define NUM_DMA_CHANS 12
 volatile DmxInput *active_inputs[NUM_DMA_CHANS] = {nullptr};
 
-DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_channels, PIO pio)
+DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_channels, PIO pio, bool inverted)
 {
+    this->_inverted = inverted;
     uint pio_ind = pio_get_index(pio);
     if(!prgm_loaded[pio_ind]) {
         /* 
         Attempt to load the DMX PIO assembly program into the PIO program memory
         */
-
+       if(!inverted) {
         if (!pio_can_add_program(pio, &DmxInput_program))
         {
             return ERR_INSUFFICIENT_PRGM_MEM;
         }
         prgm_offsets[pio_ind] = pio_add_program(pio, &DmxInput_program);
+       } else {
+        if (!pio_can_add_program(pio, &DmxInputInverted_program))
+        {
+            return ERR_INSUFFICIENT_PRGM_MEM;
+        }
+        prgm_offsets[pio_ind] = pio_add_program(pio, &DmxInputInverted_program);
+       }
+
         prgm_loaded[pio_ind] = true;
     }
 
@@ -58,7 +68,12 @@ DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_cha
     gpio_pull_up(pin);
 
     // Generate the default PIO state machine config provided by pioasm
-    pio_sm_config sm_conf = DmxInput_program_get_default_config(prgm_offsets[pio_ind]);
+    pio_sm_config sm_conf;
+    if(!inverted) {
+        sm_conf = DmxInput_program_get_default_config(prgm_offsets[pio_ind]);
+    } else {
+        sm_conf = DmxInputInverted_program_get_default_config(prgm_offsets[pio_ind]);
+    }
     sm_config_set_in_pins(&sm_conf, pin); // for WAIT, IN
     sm_config_set_jmp_pin(&sm_conf, pin); // for JMP
 
@@ -113,6 +128,12 @@ void dmxinput_dma_handler() {
         if(active_inputs[i]!=nullptr && (dma_hw->ints0 & (1u<<i))) {
             dma_hw->ints0 = 1u << i;
             volatile DmxInput *instance = active_inputs[i];
+            /*if(instance->_inverted) {
+                //flip buffer contents
+                for(int i = 0; i < DMXINPUT_BUFFER_SIZE(instance->_start_channel, instance->_num_channels); i++) {
+                    instance->_buf[i] = ~instance->_buf[i];
+                }
+            }*/
             dma_channel_set_write_addr(i, instance->_buf, true);
             pio_sm_exec(instance->_pio, instance->_sm, pio_encode_jmp(prgm_offsets[pio_get_index(instance->_pio)]));
             pio_sm_clear_fifos(instance->_pio, instance->_sm);
@@ -127,6 +148,7 @@ void dmxinput_dma_handler() {
             }
         }
     }
+    
 }
 
 void DmxInput::read_async(volatile uint8_t *buffer, void (*inputUpdatedCallback)(DmxInput*)) {

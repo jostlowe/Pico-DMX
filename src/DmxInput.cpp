@@ -128,12 +128,12 @@ void dmxinput_dma_handler() {
         if(active_inputs[i]!=nullptr && (dma_hw->ints0 & (1u<<i))) {
             dma_hw->ints0 = 1u << i;
             volatile DmxInput *instance = active_inputs[i];
-            /*if(instance->_inverted) {
+            if(instance->_inverted) {
                 //flip buffer contents
                 for(int i = 0; i < DMXINPUT_BUFFER_SIZE(instance->_start_channel, instance->_num_channels); i++) {
                     instance->_buf[i] = ~instance->_buf[i];
                 }
-            }*/
+            }
             dma_channel_set_write_addr(i, instance->_buf, true);
             pio_sm_exec(instance->_pio, instance->_sm, pio_encode_jmp(prgm_offsets[pio_get_index(instance->_pio)]));
             pio_sm_clear_fifos(instance->_pio, instance->_sm);

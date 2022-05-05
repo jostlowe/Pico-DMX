@@ -1,4 +1,4 @@
-; Author: Jostein Løwer, github: jostlowe
+; Author: Jostein Løwer, github: jostlowe; modified by @functionpointer
 ; SPDX-License-Identifier: BSD-3-Clause
 ; 
 ; PIO program for inputting the DMX lighting protocol.
@@ -25,6 +25,7 @@ bitloop:
     in pins, 1                        ; Shift data bit into ISR
     jmp x-- bitloop      [dmx_bit-2]  ; Loop 8 times, each loop iteration is 4us
     wait 0 pin 0                      ; Wait for pin to go high for stop bits
+    mov isr, ~ isr                    ; invert result before pushing
     in NULL, 24                       ; Push 24 more bits into the ISR so that our one byte is at the position where the DMA expects it
     push                              ; Should probably do error checking on the stop bits some time in the future....
 

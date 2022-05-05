@@ -26,6 +26,8 @@
 class DmxInput
 {
     uint _pin;
+    int32_t _start_channel;
+    int32_t _num_channels;
 
 public:
     /*
@@ -36,9 +38,6 @@ public:
     volatile uint _sm;
     volatile uint _dma_chan;
     volatile unsigned long _last_packet_timestamp=0;
-    volatile bool _inverted = false;
-    volatile int32_t _start_channel;
-    volatile int32_t _num_channels;
     void (*_cb)(DmxInput*);
     /*
         All different return codes for the DMX class. Only the SUCCESS

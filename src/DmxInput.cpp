@@ -29,7 +29,6 @@ volatile DmxInput *active_inputs[NUM_DMA_CHANS] = {nullptr};
 
 DmxInput::return_code DmxInput::begin(uint pin, uint start_channel, uint num_channels, PIO pio, bool inverted)
 {
-    this->_inverted = inverted;
     uint pio_ind = pio_get_index(pio);
     if(!prgm_loaded[pio_ind]) {
         /* 

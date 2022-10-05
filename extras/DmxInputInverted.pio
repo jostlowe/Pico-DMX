@@ -1,0 +1,32 @@
+; Author: Jostein Løwer, github: jostlowe; modified by @functionpointer
+; SPDX-License-Identifier: BSD-3-Clause
+; 
+; PIO program for inputting the DMX lighting protocol.
+; (Almost) compliant with ANSI E1.11-2008 (R2018)
+; The program assumes a PIO clock frequency of exactly 1MHz
+
+.program DmxInputInverted
+.define dmx_bit 4                     ; As DMX has a baudrate of 250.000kBaud, a single bit is 4us
+
+break_reset:
+    set x, 29                         ; Setup a counter to count the iterations on break_loop
+break_in_progress:
+    jmp pin break_continue
+    jmp break_reset                   ; break should be high the entire time. if it goes low, start over
+break_continue:
+    jmp x-- break_in_progress
+    wait 0 pin 0                      ; wait until MAB started
+
+.wrap_target
+    wait 1 pin 0                      ; Stall until start bit is asserted, i.e. MAB is over
+    set x, 7             [dmx_bit]    ; Preload bit counter, then delay until halfway through
+
+bitloop:
+    in pins, 1                        ; Shift data bit into ISR
+    jmp x-- bitloop      [dmx_bit-2]  ; Loop 8 times, each loop iteration is 4us
+    wait 0 pin 0                      ; Wait for pin to go high for stop bits
+    mov isr, ~ isr                    ; invert result before pushing
+    in NULL, 24                       ; Push 24 more bits into the ISR so that our one byte is at the position where the DMA expects it
+    push                              ; Should probably do error checking on the stop bits some time in the future....
+
+.wrap

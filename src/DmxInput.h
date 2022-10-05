@@ -69,7 +69,7 @@ public:
        run 3 more on pio1  
     */
 
-    return_code begin(uint pin, uint start_channel, uint num_channels, PIO pio = pio0);
+    return_code begin(uint pin, uint start_channel, uint num_channels, PIO pio = pio0, bool inverted = false);
 
     /*
         Read the selected channels from .begin(...) into a buffer.
